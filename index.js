@@ -28,6 +28,7 @@ io.on('connection', (socket) => {
       console.log(currentPlayer.name + 'emit: other player connected:' + JSON.stringify(playerConnected))
     }
   })
+
   socket.on('player move', (data) => {
     console.log('recv: move: ' + JSON.stringify(data))
     currentPlayer.position = data.position
@@ -100,7 +101,7 @@ io.on('connection', (socket) => {
     if (clients.length === 0) {
       numberOfEnemies = data.enemySpawnPoints.length
       enemies = []
-      data.enemySpawnPoints.forEach(function(enemySpawnPoints) {
+      data.enemySpawnPoints.forEach(function(enemySpawnPoint) {
         var enemy = {
           name: guid(),
           position: enemySpawnPoint.position,
@@ -110,10 +111,10 @@ io.on('connection', (socket) => {
         enemies.push(enemy)
       })
       playerSpawnPoints = []
-      data.playerSpawnPoints.forEach(function(_playerSpawnPoint) {
-        var _playerSpawnPoint = {
-          position: _playerSpawnPoint.position,
-          rotation: _playerSpawnPoint.rotation
+      data.playerSpawnPoints.forEach(function(playerSpawnPoint) {
+        var playerSpawnPoint = {
+          position: playerSpawnPoint.position,
+          rotation: playerSpawnPoint.rotation
         }
         playerSpawnPoints.push(playerSpawnPoint)
       })
@@ -125,7 +126,7 @@ io.on('connection', (socket) => {
 
     console.log(currentPlayer.name + 'emit: enemies: ' + JSON.stringify(enemiesResponse))
     socket.emit('enemies', enemiesResponse)
-    var randomSpawnPoint = playerSpawnPoint[Math.florr(Math.random() * playerSpawnPoints.length)]
+    var randomSpawnPoint = playerSpawnPoints[Math.floor(Math.random() * playerSpawnPoints.length)]
     currentPlayer = {
       name: data.name,
       position: randomSpawnPoint.position,
@@ -139,6 +140,8 @@ io.on('connection', (socket) => {
     // in your current game, we need to tell the other players about you.
     socket.broadcast.emit('other player connected', currentPlayer)
   })
+
+  //end
 })
 
 server.listen(3000)
